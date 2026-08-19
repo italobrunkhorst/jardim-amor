@@ -57,7 +57,7 @@
     /* Cabeçalho */
     header {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
       position: relative;
       z-index: 2;
     }
@@ -74,6 +74,60 @@
       color: #ffccd5;
       margin-top: 5px;
       font-weight: 300;
+    }
+
+    /* Formulário de Novo Card */
+    .input-section {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 45px;
+      position: relative;
+      z-index: 2;
+      flex-wrap: wrap;
+    }
+
+    .input-section input {
+      padding: 14px 22px;
+      border-radius: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      min-width: 260px;
+      font-family: inherit;
+      transition: border-color 0.3s;
+    }
+
+    .input-section input:focus {
+      border-color: #ffb3c6;
+    }
+
+    .input-section input::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .input-section button {
+      padding: 14px 28px;
+      border-radius: 30px;
+      border: none;
+      background: #ff4d6d;
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 15px rgba(255, 77, 109, 0.4);
+      font-family: inherit;
+    }
+
+    .input-section button:hover {
+      background: #ff758f;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 77, 109, 0.6);
     }
 
     /* Grid de Cards */
@@ -100,6 +154,12 @@
       transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
       position: relative;
       overflow: hidden;
+      animation: popIn 0.5s ease-out;
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     .card:hover {
@@ -108,7 +168,7 @@
       background: rgba(255, 255, 255, 0.18);
     }
 
-    /* Estilo Especial para o Card Amarelo da Marcela */
+    /* Estilo Especial Amarelo Solar para Marcela */
     .card-sun {
       background: rgba(255, 215, 0, 0.25);
       border: 1px solid rgba(255, 223, 0, 0.6);
@@ -173,23 +233,19 @@
   <!-- Cabeçalho -->
   <header>
     <h1>Jardim do Amor</h1>
-    <p>Clique em qualquer cartão para disparar uma explosão de carinho ✨</p>
+    <p>Digite um nome abaixo para plantar uma nova flor neste jardim ✨</p>
   </header>
 
-  <!-- Grade de Cards -->
-  <main class="garden-grid">
+  <!-- Seção para Criar Novo Card -->
+  <div class="input-section">
+    <input type="text" id="nameInput" placeholder="Digite o nome aqui..." onkeydown="handleKeyPress(event)" />
+    <button onclick="addCard()">Criar Card de Amor ❤️</button>
+  </div>
 
-    <!-- Card Sabibi -->
-    <div class="card" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Sabibi</span> 💖
-      </div>
-      <p class="card-description">
-        Seu jeito único e carinhoso ilumina meus dias. Estar ao seu lado é ter a certeza de que a vida é cheia de amor, doçura e momentos inesquecíveis.
-      </p>
-    </div>
+  <!-- Grade de Cards Dynamic -->
+  <main class="garden-grid" id="gardenGrid">
 
-    <!-- Card Marcela (Amarelo como o Sol) -->
+    <!-- Card Inicial Especial Marcela -->
     <div class="card card-sun" onclick="explodeLove(event)">
       <div class="card-name">
         <span>Marcela</span> ☀️
@@ -199,50 +255,64 @@
       </p>
     </div>
 
-    <!-- Card Jujubolinha -->
-    <div class="card" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Jujubolinha</span> 🍬
-      </div>
-      <p class="card-description">
-        Doce, fofa e cheia de leveza. Você traz aquele gostinho bom de felicidade pra rotina e faz todo mundo sorrir com sua pureza incomparável.
-      </p>
-    </div>
-
-    <!-- Card Vesguinha -->
-    <div class="card" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Vesguinha</span> 😉
-      </div>
-      <p class="card-description">
-        Com o olhar mais fofo, apaixonante e encantador de todos. Seu jeito brincalhão e carinhoso conquista qualquer um no primeiro segundo.
-      </p>
-    </div>
-
-    <!-- Card Maria -->
-    <div class="card" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Maria</span> 🌹
-      </div>
-      <p class="card-description">
-        Uma alma graciosa, forte e preciosa como uma rosa. Sua presença traz paz, aconchego e um amor verdadeiro que floresce a cada dia.
-      </p>
-    </div>
-
-    <!-- Card Raquel -->
-    <div class="card" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Raquel</span> ✨
-      </div>
-      <p class="card-description">
-        Sua estrela brilha de um jeito inconfundível. Uma pessoa admirável que espalha boas vibrações, carinho e luz por onde quer que passe.
-      </p>
-    </div>
-
   </main>
 
   <script>
-    // --- 1. Efeito de Pétalas de Rosa Caindo ---
+    // --- 1. Gerador de Frases e Emojis Românticos ---
+    const romanticTemplates = [
+      "Sua luz é inconfundível. Estar ao seu lado faz qualquer momento simples se transformar em poesia pura.",
+      "Seu sorriso tem a magia de iluminar qualquer dia cinzento e trazer paz imediata para o coração.",
+      "Uma alma inesquecível e a definição perfeita de encanto, carinho, leveza e afeto verdadeiro.",
+      "Com um olhar cativante e uma energia incomparável, você torna este mundo um lugar infinitamente mais bonito.",
+      "Ter você por perto é como viver em uma eterna primavera. Você é pura inspiração e amor.",
+      "Sua presença transmite serenidade e alegria contagiante. Um verdadeiro presente para quem te cerca.",
+      "Você tem o dom raro de fazer o amor florescer nos pequenos gestos e em cada palavra dita."
+    ];
+
+    const nameEmojis = ['💖', '🌹', '✨', '🌸', '💘', '💗', '⭐', '🌺', '💕', '🌷'];
+
+    // --- 2. Função para Adicionar Novo Card ---
+    function addCard() {
+      const nameInput = document.getElementById('nameInput');
+      const name = nameInput.value.trim();
+
+      if (!name) {
+        alert('Por favor, digite um nome!');
+        return;
+      }
+
+      // Se for Marcela, ganha o sol e estilo amarelo!
+      const isMarcela = name.toLowerCase().includes('marcela');
+      const emoji = isMarcela ? '☀️' : nameEmojis[Math.floor(Math.random() * nameEmojis.length)];
+      
+      const desc = isMarcela 
+        ? "Com a luz radiante e o calor do sol, seu sorriso ilumina qualquer lugar e aquece o coração. Você é energia pura e brilho constante!"
+        : romanticTemplates[Math.floor(Math.random() * romanticTemplates.length)];
+
+      const card = document.createElement('div');
+      card.className = `card ${isMarcela ? 'card-sun' : ''}`;
+      card.onclick = (e) => explodeLove(e);
+
+      card.innerHTML = `
+        <div class="card-name">
+          <span>${name}</span> ${emoji}
+        </div>
+        <p class="card-description">${desc}</p>
+      `;
+
+      const grid = document.getElementById('gardenGrid');
+      grid.prepend(card); // Insere no topo da lista
+
+      nameInput.value = '';
+    }
+
+    function handleKeyPress(event) {
+      if (event.key === 'Enter') {
+        addCard();
+      }
+    }
+
+    // --- 3. Efeito de Pétalas de Rosa Caindo ---
     const petalsContainer = document.getElementById('petalsContainer');
     const petalEmojis = ['🌸', '🌹', '🌺', '🍃'];
 
@@ -268,7 +338,7 @@
 
     setInterval(createPetal, 350);
 
-    // --- 2. Efeito de Explosão de Amor ao Clicar ---
+    // --- 4. Efeito de Explosão de Amor ao Clicar ---
     const hearts = ['❤️', '💖', '💕', '💘', '💗', '✨', '🌹', '☀️'];
 
     function explodeLove(event) {
