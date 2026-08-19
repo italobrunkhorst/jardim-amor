@@ -108,6 +108,23 @@
       background: rgba(255, 255, 255, 0.18);
     }
 
+    /* Estilo Especial para o Card Amarelo da Marcela */
+    .card-sun {
+      background: rgba(255, 215, 0, 0.25);
+      border: 1px solid rgba(255, 223, 0, 0.6);
+      box-shadow: 0 10px 30px rgba(255, 215, 0, 0.25);
+    }
+
+    .card-sun:hover {
+      background: rgba(255, 215, 0, 0.38);
+      box-shadow: 0 15px 35px rgba(255, 215, 0, 0.6);
+    }
+
+    .card-sun .card-name {
+      color: #fff7be;
+      text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    }
+
     .card-name {
       font-size: 1.8rem;
       font-weight: 600;
@@ -159,60 +176,66 @@
     <p>Clique em qualquer cartão para disparar uma explosão de carinho ✨</p>
   </header>
 
-  <!-- Grade de Cards com Nomes e Descrições -->
+  <!-- Grade de Cards -->
   <main class="garden-grid">
 
+    <!-- Card Sabibi -->
     <div class="card" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Ana</span> 🌹
+        <span>Sabibi</span> 💖
       </div>
       <p class="card-description">
-        Sua gentileza ilumina qualquer dia escuro. Você é como uma rosa que floresce e traz perfume e vida para tudo ao seu redor.
+        Seu jeito único e carinhoso ilumina meus dias. Estar ao seu lado é ter a certeza de que a vida é cheia de amor, doçura e momentos inesquecíveis.
       </p>
     </div>
 
-    <div class="card" onclick="explodeLove(event)">
+    <!-- Card Marcela (Amarelo como o Sol) -->
+    <div class="card card-sun" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Lucas</span> ❤️
+        <span>Marcela</span> ☀️
       </div>
       <p class="card-description">
-        Seu abraço é porto seguro e seu sorriso tem o dom de acalmar qualquer tempestade. Ter você por perto é um verdadeiro presente.
+        Com a luz radiante e o calor do sol, seu sorriso ilumina qualquer lugar e aquece o coração. Você é energia pura, alegria e brilho constante!
       </p>
     </div>
 
+    <!-- Card Jujubolinha -->
     <div class="card" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Beatriz</span> ✨
+        <span>Jujubolinha</span> 🍬
       </div>
       <p class="card-description">
-        Com uma energia contagiante e um brilho único no olhar, você transforma instantes simples em memórias inesquecíveis.
+        Doce, fofa e cheia de leveza. Você traz aquele gostinho bom de felicidade pra rotina e faz todo mundo sorrir com sua pureza incomparável.
       </p>
     </div>
 
+    <!-- Card Vesguinha -->
     <div class="card" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Gabriel</span> 💖
+        <span>Vesguinha</span> 😉
       </div>
       <p class="card-description">
-        Sua lealdade e carinho não têm preço. Você ensina o verdadeiro valor da cumplicidade e de amar sem medidas a cada dia.
+        Com o olhar mais fofo, apaixonante e encantador de todos. Seu jeito brincalhão e carinhoso conquista qualquer um no primeiro segundo.
       </p>
     </div>
 
+    <!-- Card Maria -->
     <div class="card" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Mariana</span> 🌸
+        <span>Maria</span> 🌹
       </div>
       <p class="card-description">
-        Delicada e forte ao mesmo tempo, você tem a alma mais linda que existe. Estar ao seu lado é viver em constante primavera.
+        Uma alma graciosa, forte e preciosa como uma rosa. Sua presença traz paz, aconchego e um amor verdadeiro que floresce a cada dia.
       </p>
     </div>
 
+    <!-- Card Raquel -->
     <div class="card" onclick="explodeLove(event)">
       <div class="card-name">
-        <span>Amor Eterno</span> 💘
+        <span>Raquel</span> ✨
       </div>
       <p class="card-description">
-        Para todas as conexões verdadeiras que desafiam o tempo e a distância. O sentimento puro que habita em cada batida do coração.
+        Sua estrela brilha de um jeito inconfundível. Uma pessoa admirável que espalha boas vibrações, carinho e luz por onde quer que passe.
       </p>
     </div>
 
@@ -227,35 +250,29 @@
       const petal = document.createElement('div');
       petal.classList.add('petal');
       
-      // Sorteia o emoji da pétala
       petal.innerText = petalEmojis[Math.floor(Math.random() * petalEmojis.length)];
-      
-      // Posição inicial x aleatória
       petal.style.left = Math.random() * 100 + 'vw';
       
-      // Tamanho e duração da queda aleatórios
       const size = Math.random() * 1.2 + 0.8;
-      const duration = Math.random() * 5 + 6; // 6s a 11s
+      const duration = Math.random() * 5 + 6;
       
       petal.style.fontSize = `${size}rem`;
       petal.style.animationDuration = `${duration}s`;
       
       petalsContainer.appendChild(petal);
 
-      // Remove a pétala após o término da animação
       setTimeout(() => {
         petal.remove();
       }, duration * 1000);
     }
 
-    // Gera pétalas continuamente
     setInterval(createPetal, 350);
 
-    // --- 2. Efeito de Explosão de Amor ao Clicar no Card ---
-    const hearts = ['❤️', '💖', '💕', '💘', '💗', '✨', '🌹'];
+    // --- 2. Efeito de Explosão de Amor ao Clicar ---
+    const hearts = ['❤️', '💖', '💕', '💘', '💗', '✨', '🌹', '☀️'];
 
     function explodeLove(event) {
-      const count = 25; // Quantidade de elementos na explosão
+      const count = 25;
       const clickX = event.clientX;
       const clickY = event.clientY;
 
@@ -264,9 +281,8 @@
         heart.classList.add('heart-particle');
         heart.innerText = hearts[Math.floor(Math.random() * hearts.length)];
 
-        // Direção e distância aleatórias para a explosão
         const angle = Math.random() * Math.PI * 2;
-        const distance = Math.random() * 180 + 50; // Distância entre 50px e 230px
+        const distance = Math.random() * 180 + 50;
         const x = Math.cos(angle) * distance + 'px';
         const y = Math.sin(angle) * distance + 'px';
         const rotation = (Math.random() - 0.5) * 500 + 'deg';
@@ -279,7 +295,6 @@
 
         document.body.appendChild(heart);
 
-        // Limpa as partículas após a animação
         setTimeout(() => {
           heart.remove();
         }, 1000);
