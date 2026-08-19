@@ -242,23 +242,31 @@
     <button onclick="addCard()">Criar Card de Amor ❤️</button>
   </div>
 
-  <!-- Grade de Cards Dynamic -->
+  <!-- Grade de Cards Dinâmico -->
   <main class="garden-grid" id="gardenGrid">
-
-    <!-- Card Inicial Especial Marcela -->
-    <div class="card card-sun" onclick="explodeLove(event)">
-      <div class="card-name">
-        <span>Marcela</span> ☀️
-      </div>
-      <p class="card-description">
-        Com a luz radiante e o calor do sol, seu sorriso ilumina qualquer lugar e aquece o coração. Você é energia pura, alegria e brilho constante!
-      </p>
-    </div>
-
+    <!-- Os cards serão carregados dinamicamente do Firebase aqui -->
   </main>
 
-  <script>
-    // --- 1. Gerador de Frases e Emojis Românticos ---
+  <!-- Script Firebase (Módulo JS) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Configuração do Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBTuY6WAgMNden4fck5ywoo5T2meE99r38",
+      authDomain: "jardimamor.firebaseapp.com",
+      projectId: "jardimamor",
+      storageBucket: "jardimamor.firebasestorage.app",
+      messagingSenderId: "333256190320",
+      appId: "1:333256190320:web:a87c95f94c57c46e5307b5",
+      measurementId: "G-5C2MR3JWQ0"
+    };
+
+    // Inicializa o Firebase e o Banco de Dados Firestore
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
     const romanticTemplates = [
       "Sua luz é inconfundível. Estar ao seu lado faz qualquer momento simples se transformar em poesia pura.",
       "Seu sorriso tem a magia de iluminar qualquer dia cinzento e trazer paz imediata para o coração.",
@@ -271,8 +279,23 @@
 
     const nameEmojis = ['💖', '🌹', '✨', '🌸', '💘', '💗', '⭐', '🌺', '💕', '🌷'];
 
-    // --- 2. Função para Adicionar Novo Card ---
-    function addCard() {
+    // 1. Escuta alterações em tempo real no banco de dados
+    const q = query(collection(db, "cards"), orderBy("createdAt", "desc"));
+    
+    onSnapshot(q, (snapshot) => {
+      const gardenGrid = document.getElementById('gardenGrid');
+      gardenGrid.innerHTML = ''; // Limpa a tela para renderizar os cards atualizados
+
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        renderCard(data.name, data.emoji, data.description, data.isMarcela);
+      });
+    }, (error) => {
+      console.error("Erro no Firebase: ", error);
+    });
+
+    // 2. Salva um novo card no Firestore
+    window.addCard = async function() {
       const nameInput = document.getElementById('nameInput');
       const name = nameInput.value.trim();
 
@@ -281,7 +304,6 @@
         return;
       }
 
-      // Se for Marcela, ganha o sol e estilo amarelo!
       const isMarcela = name.toLowerCase().includes('marcela');
       const emoji = isMarcela ? '☀️' : nameEmojis[Math.floor(Math.random() * nameEmojis.length)];
       
@@ -289,30 +311,46 @@
         ? "Com a luz radiante e o calor do sol, seu sorriso ilumina qualquer lugar e aquece o coração. Você é energia pura e brilho constante!"
         : romanticTemplates[Math.floor(Math.random() * romanticTemplates.length)];
 
+      try {
+        await addDoc(collection(db, "cards"), {
+          name: name,
+          emoji: emoji,
+          description: desc,
+          isMarcela: isMarcela,
+          createdAt: serverTimestamp()
+        });
+        nameInput.value = '';
+      } catch (e) {
+        console.error("Erro ao adicionar documento: ", e);
+        alert("Atenção: Verifique se o Firestore Database foi ativado no painel do Firebase!");
+      }
+    };
+
+    function renderCard(name, emoji, description, isMarcela) {
       const card = document.createElement('div');
       card.className = `card ${isMarcela ? 'card-sun' : ''}`;
-      card.onclick = (e) => explodeLove(e);
+      card.onclick = (e) => window.explodeLove(e);
 
       card.innerHTML = `
         <div class="card-name">
           <span>${name}</span> ${emoji}
         </div>
-        <p class="card-description">${desc}</p>
+        <p class="card-description">${description}</p>
       `;
 
       const grid = document.getElementById('gardenGrid');
-      grid.prepend(card); // Insere no topo da lista
-
-      nameInput.value = '';
+      grid.appendChild(card);
     }
 
-    function handleKeyPress(event) {
+    window.handleKeyPress = function(event) {
       if (event.key === 'Enter') {
-        addCard();
+        window.addCard();
       }
-    }
+    };
+  </script>
 
-    // --- 3. Efeito de Pétalas de Rosa Caindo ---
+  <script>
+    // --- Efeito de Pétalas de Rosa Caindo ---
     const petalsContainer = document.getElementById('petalsContainer');
     const petalEmojis = ['🌸', '🌹', '🌺', '🍃'];
 
@@ -338,10 +376,10 @@
 
     setInterval(createPetal, 350);
 
-    // --- 4. Efeito de Explosão de Amor ao Clicar ---
+    // --- Efeito de Explosão de Amor ao Clicar ---
     const hearts = ['❤️', '💖', '💕', '💘', '💗', '✨', '🌹', '☀️'];
 
-    function explodeLove(event) {
+    window.explodeLove = function(event) {
       const count = 25;
       const clickX = event.clientX;
       const clickY = event.clientY;
@@ -369,7 +407,7 @@
           heart.remove();
         }, 1000);
       }
-    }
+    };
   </script>
 </body>
 </html>
