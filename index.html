@@ -168,6 +168,30 @@
       background: rgba(255, 255, 255, 0.18);
     }
 
+    /* Botão de Apagar Card */
+    .delete-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 10;
+    }
+
+    .delete-btn:hover {
+      background: rgba(255, 77, 109, 0.8);
+      transform: scale(1.15);
+    }
+
     /* Estilo Especial Amarelo Solar para Marcela */
     .card-sun {
       background: rgba(255, 215, 0, 0.25);
@@ -250,7 +274,7 @@
   <!-- Script Firebase (Módulo JS) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
     // Configuração do Firebase
     const firebaseConfig = {
@@ -286,9 +310,9 @@
       const gardenGrid = document.getElementById('gardenGrid');
       gardenGrid.innerHTML = ''; // Limpa a tela para renderizar os cards atualizados
 
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        renderCard(data.name, data.emoji, data.description, data.isMarcela);
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        renderCard(docSnap.id, data.name, data.emoji, data.description, data.isMarcela);
       });
     }, (error) => {
       console.error("Erro no Firebase: ", error);
@@ -326,12 +350,27 @@
       }
     };
 
-    function renderCard(name, emoji, description, isMarcela) {
+    // 3. Função para apagar um card do Firestore
+    window.deleteCard = async function(id, event) {
+      event.stopPropagation(); // Evita ativar a explosão de amor ao clicar no botão de apagar
+      
+      if (confirm("Deseja mesmo apagar este card do jardim?")) {
+        try {
+          await deleteDoc(doc(db, "cards", id));
+        } catch (e) {
+          console.error("Erro ao apagar card: ", e);
+          alert("Não foi possível apagar o card.");
+        }
+      }
+    };
+
+    function renderCard(id, name, emoji, description, isMarcela) {
       const card = document.createElement('div');
       card.className = `card ${isMarcela ? 'card-sun' : ''}`;
       card.onclick = (e) => window.explodeLove(e);
 
       card.innerHTML = `
+        <button class="delete-btn" onclick="window.deleteCard('${id}', event)" title="Apagar card">🗑️</button>
         <div class="card-name">
           <span>${name}</span> ${emoji}
         </div>
